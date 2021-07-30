@@ -2,9 +2,384 @@
 <html>
     <head>
     </head>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
     <body>
-        <p>
-            Hello!
-        </p>
+        <div id="overall-covid-deaths-div">
+            <svg id="overall-covid-deaths" width=500 height=500></svg>
+            <script>
+
+                function changeToPageOneFromPageTwo() {
+                    var pageOne = document.getElementById("overall-covid-deaths-div");
+                    pageOne.style.display = "block";
+                    var pageTwo = document.getElementById("covid-deaths-per-age-group-div");
+                        pageTwo.style.display = "none";
+                }
+
+                function changeToPageTwoFromPageOne() {
+                    var pageTwo = document.getElementById("covid-deaths-per-age-group-div");
+                        pageTwo.style.display = "block";
+                    var pageOne = document.getElementById("overall-covid-deaths-div");
+                        pageOne.style.display = "none";
+                }
+
+                function changeToPageTwoFromPageThree() {
+                    var pageTwo = document.getElementById("covid-deaths-per-age-group-div");
+                        pageTwo.style.display = "block";
+                    var pageThree = document.getElementById("covid-deaths-per-age-group-per-state-div");
+                        pageThree.style.display = "none";
+                }
+
+                function changeToPageThreeFromPageTwo() {
+                    var pageThree = document.getElementById("covid-deaths-per-age-group-per-state-div");
+                        pageThree.style.display = "block";
+                    var pageTwo = document.getElementById("covid-deaths-per-age-group-div");
+                        pageTwo.style.display = "none";
+                }
+
+
+
+
+                var svg = d3.select("#overall-covid-deaths"),
+                    margin = 200,
+                    width = svg.attr("width") - margin,
+                    height = svg.attr("height") - margin;
+
+                var xScale = d3.scaleBand().range ([0, width]).padding(0.4),
+                    yScale = d3.scaleLinear().range ([height, 0]);
+
+                var g = svg.append("g")
+                .attr("transform", "translate(" + 100 + "," + 100 + ")");
+
+                var deathsByAllSexesAndAllAges = [
+                    {sex: "All Sexes", ageGroup: "All Ages", covidDeaths: 601124}
+                ];
+
+                var deathsByGenderAndAllAges = [
+                    {sex: "Male", ageGroup: "All Ages", covidDeaths: 329643},
+                    {sex: "Female", ageGroup: "All Ages", covidDeaths: 271481}
+                ]
+
+                xScale.domain(deathsByGenderAndAllAges.map(function(d) { return d.sex; }));
+                yScale.domain([0, d3.max(deathsByGenderAndAllAges, function(d) { return 350000; })]);
+
+                g.append("g")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(d3.axisBottom(xScale));
+
+                g.append("g")
+                    .call(d3.axisLeft(yScale))
+                    .append("text")
+                    .attr("y", 6)
+                    .attr("dy", "0.71em")
+                    .attr("text-anchor", "end")
+                    .text("value");
+
+                g.selectAll("bar")
+                    .data(deathsByGenderAndAllAges)
+                    .enter().append("rect")
+                    .attr("class", "bar")
+                    .style("fill", function(d) {
+                        if (d.sex == "Male") {
+                            return "steelblue";
+                        } else if (d.sex == "Female") {
+                            return "pink";
+                        }
+                    })
+                    .attr("x", function(d) { return xScale(d.sex); })
+                    .attr("y", function(d) { return yScale(d.covidDeaths); })
+                    .attr("width", xScale.bandwidth())
+                    .attr("height", function(d) { return height - yScale(d.covidDeaths); });
+            </script>
+            <div id="page-number">
+                Page 1
+            </div>
+            <div id="next-page-button">
+                <button id="next-page" onclick="changeToPageTwoFromPageOne()" type="button">Next Page</button>
+            </div>
+        </div>
+        
+
+        <div id="covid-deaths-per-age-group-div" style="display:none;">
+            <svg id="covid-deaths-per-age-group" width=800 height=500></svg>
+            <script>
+                var svg = d3.select("#covid-deaths-per-age-group"),
+                    margin = 200,
+                    width = svg.attr("width") - margin,
+                    height = svg.attr("height") - margin;
+
+                var g = svg.append("g")
+                .attr("transform", "translate(" + 100 + "," + 100 + ")");
+
+                var xScale = d3.scaleBand().range([0, width]).padding(0.4),
+                    yScale = d3.scaleLinear().range([height, 0]);
+
+                var deathsByGenderPerAgeGroup = [
+                    {sex: "Male", ageGroup: "0-17", covidDeaths: 191},
+                    {sex: "Female", ageGroup: "0-17", covidDeaths: 146},
+                    {sex: "Male", ageGroup: "18-29", covidDeaths: 1529},
+                    {sex: "Female", ageGroup: "18-29", covidDeaths: 941},
+                    {sex: "Male", ageGroup: "30-39", covidDeaths: 4544},
+                    {sex: "Female", ageGroup: "30-39", covidDeaths: 2530},
+                    {sex: "Male", ageGroup: "40-49", covidDeaths: 12212},
+                    {sex: "Female", ageGroup: "40-49", covidDeaths: 6598},
+                    {sex: "Male", ageGroup: "50-64", covidDeaths: 61121},
+                    {sex: "Female", ageGroup: "50-64", covidDeaths: 34584},
+                    {sex: "Male", ageGroup: "65-74", covidDeaths: 81587},
+                    {sex: "Female", ageGroup: "65-74", covidDeaths: 52458},
+                    {sex: "Male", ageGroup: "75-84", covidDeaths: 92611},
+                    {sex: "Female", ageGroup: "75-84", covidDeaths: 71921},
+                    {sex: "Male", ageGroup: "85+", covidDeaths: 75848},
+                    {sex: "Female", ageGroup: "85+", covidDeaths: 102303}
+                ];
+
+                xScale.domain(deathsByGenderPerAgeGroup.map(function(d) { return d.ageGroup; }));
+                yScale.domain([0, d3.max(deathsByGenderPerAgeGroup, function(d) { return 110000; })]);
+
+                g.append("g")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(d3.axisBottom(xScale));
+
+                g.append("g")
+                    .call(d3.axisLeft(yScale))
+                    .append("text")
+                    .attr("y", 6)
+                    .attr("dy", "0.71em")
+                    .attr("text-anchor", "end")
+                    .text("value");
+
+                var subgroups = ["Male","Female"];
+
+                var xSubgroup = d3.scaleBand()
+                    .domain(subgroups)
+                    .range([0,xScale.bandwidth()])
+                    .padding([0.05]);
+
+                g.selectAll(".bar")
+                    .data(deathsByGenderPerAgeGroup)
+                    .enter()
+                    .append("g")
+                    .attr("transform", function(d) { return "translate(" + xScale(d.ageGroup) + ")"; })
+                    .selectAll("rect")
+                    .data(function(d) { return subgroups.map(function(key) { return {key: d.sex, value: d.covidDeaths}; }); })
+                    .enter().append("rect")
+                    .attr("x", function(d) { return xSubgroup(d.key); })
+                    .attr("y", function(d) { return yScale(d.value); })
+                    .attr("width", xSubgroup.bandwidth())
+                    .attr("height", function(d) { return height - yScale(d.value); })
+                    .attr("fill", function(d) { 
+                        if (d.key == "Male") {
+                            return "steelblue";
+                        } else if (d.key == "Female") {
+                            return "pink";
+                        }
+                     });
+            </script>
+            <div id="page-number">
+                Page 2
+            </div>
+            <div id="previous-and-next-page-button">
+                <button id="previous-page" onclick="changeToPageOneFromPageTwo()" type="button">Previous Page</button>
+                <button id="next-page" onclick="changeToPageThreeFromPageTwo()" type="button">Next Page</button>
+            </div>
+        </div>
+
+
+        <div id="covid-deaths-per-age-group-per-state-div" style="display:none;">
+
+            <div id="state-drop-down">
+                <label for="states">Choose a state:</label>
+                <select name="states" id="states" onchange="filterDeathsToList(value)">
+                    <option value="Alabama">Alabama</option>
+                    <option value="Alaska">Alaska</option>
+                    <option value="Arizona">Arizona</option>
+                    <option value="Arkansas">Arkansas</option>
+                    <option value="California">California</option>
+                    <option value="Colorado">Colorado</option>
+                    <option value="Connecticut">Connecticut</option>
+                    <option value="Delaware">Delaware</option>
+                    <option value="Florida">Florida</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Hawaii">Hawaii</option>
+                    <option value="Idaho">Idaho</option>
+                    <option value="Illinois">Illinois</option>
+                    <option value="Indiana">Indiana</option>
+                    <option value="Iowa">Iowa</option>
+                    <option value="Kansas">Kansas</option>
+                    <option value="Kentucky">Kentucky</option>
+                    <option value="Louisiana">Louisiana</option>
+                    <option value="Maine">Maine</option>
+                    <option value="Maryland">Maryland</option>
+                    <option value="Massachusetts">Massachusetts</option>
+                    <option value="Michigan">Michigan</option>
+                    <option value="Minnesota">Minnesota</option>
+                    <option value="Mississippi">Mississippi</option>
+                    <option value="Missouri">Missouri</option>
+                    <option value="Montana">Montana</option>
+                    <option value="Nebraska">Nebraska</option>
+                    <option value="Nevada">Nevada</option>
+                    <option value="New Hampshire">New Hampshire</option>
+                    <option value="New Jersey">New Jersey</option>
+                    <option value="New Mexico">New Mexico</option>
+                    <option value="New York">New York</option>
+                    <option value="North Carolina">North Carolina</option>
+                    <option value="North Dakota">North Dakota</option>
+                    <option value="Ohio">Ohio</option>
+                    <option value="Oklahoma">Oklahoma</option>
+                    <option value="Oregon">Oregon</option>
+                    <option value="Pennsylvania">Pennsylvania</option>
+                    <option value="Rhode Island">Rhode Island</option>
+                    <option value="South Carolina">South Carolina</option>
+                    <option value="South Dakota">South Dakota</option>
+                    <option value="Tennessee">Tennessee</option>
+                    <option value="Texas">Texas</option>
+                    <option value="Utah">Utah</option>
+                    <option value="Vermont">Vermont</option>
+                    <option value="Virginia">Virginia</option>
+                    <option value="Washington">Washington</option>
+                    <option value="West Virginia">West Virginia</option>
+                    <option value="Wisconsin">Wisconsin</option>
+                    <option value="Wyoming">Wyoming</option>
+                </select>
+            </div>
+
+            <svg id="covid-deaths-per-age-group-per-state" width=800 height=500></svg>
+            <script>
+                var deathsByGenderPerAgeGroupPerState = [
+                    {state: "Alabama", sex: "Male", ageGroup: "0-17", covidDeaths: 19},
+                    {state: "Alabama", sex: "Female", ageGroup: "0-17", covidDeaths: 16},
+                    {state: "Alabama", sex: "Male", ageGroup: "18-29", covidDeaths: 159},
+                    {state: "Alabama", sex: "Female", ageGroup: "18-29", covidDeaths: 91},
+                    {state: "Alabama", sex: "Male", ageGroup: "30-39", covidDeaths: 454},
+                    {state: "Alabama", sex: "Female", ageGroup: "30-39", covidDeaths: 230},
+                    {state: "Alabama", sex: "Male", ageGroup: "40-49", covidDeaths: 1222},
+                    {state: "Alabama", sex: "Female", ageGroup: "40-49", covidDeaths: 698},
+                    {state: "Alabama", sex: "Male", ageGroup: "50-64", covidDeaths: 6111},
+                    {state: "Alabama", sex: "Female", ageGroup: "50-64", covidDeaths: 3584},
+                    {state: "Alabama", sex: "Male", ageGroup: "65-74", covidDeaths: 8157},
+                    {state: "Alabama", sex: "Female", ageGroup: "65-74", covidDeaths: 5458},
+                    {state: "Alabama", sex: "Male", ageGroup: "75-84", covidDeaths: 9211},
+                    {state: "Alabama", sex: "Female", ageGroup: "75-84", covidDeaths: 7921},
+                    {state: "Alabama", sex: "Male", ageGroup: "85+", covidDeaths: 7588},
+                    {state: "Alabama", sex: "Female", ageGroup: "85+", covidDeaths: 10203},
+
+                    {state: "Florida", sex: "Male", ageGroup: "0-17", covidDeaths: 191},
+                    {state: "Florida", sex: "Female", ageGroup: "0-17", covidDeaths: 146},
+                    {state: "Florida", sex: "Male", ageGroup: "18-29", covidDeaths: 1529},
+                    {state: "Florida", sex: "Female", ageGroup: "18-29", covidDeaths: 941},
+                    {state: "Florida", sex: "Male", ageGroup: "30-39", covidDeaths: 4544},
+                    {state: "Florida", sex: "Female", ageGroup: "30-39", covidDeaths: 2530},
+                    {state: "Florida", sex: "Male", ageGroup: "40-49", covidDeaths: 12212},
+                    {state: "Florida", sex: "Female", ageGroup: "40-49", covidDeaths: 6598},
+                    {state: "Florida", sex: "Male", ageGroup: "50-64", covidDeaths: 61121},
+                    {state: "Florida", sex: "Female", ageGroup: "50-64", covidDeaths: 34584},
+                    {state: "Florida", sex: "Male", ageGroup: "65-74", covidDeaths: 81587},
+                    {state: "Florida", sex: "Female", ageGroup: "65-74", covidDeaths: 52458},
+                    {state: "Florida", sex: "Male", ageGroup: "75-84", covidDeaths: 92611},
+                    {state: "Florida", sex: "Female", ageGroup: "75-84", covidDeaths: 71921},
+                    {state: "Florida", sex: "Male", ageGroup: "85+", covidDeaths: 75848},
+                    {state: "Florida", sex: "Female", ageGroup: "85+", covidDeaths: 102303}
+                ];
+
+                var filteredList = [
+                {state: "Alabama", sex: "Male", ageGroup: "0-17", covidDeaths: 19},
+                    {state: "Alabama", sex: "Female", ageGroup: "0-17", covidDeaths: 16},
+                    {state: "Alabama", sex: "Male", ageGroup: "18-29", covidDeaths: 159},
+                    {state: "Alabama", sex: "Female", ageGroup: "18-29", covidDeaths: 91},
+                    {state: "Alabama", sex: "Male", ageGroup: "30-39", covidDeaths: 454},
+                    {state: "Alabama", sex: "Female", ageGroup: "30-39", covidDeaths: 230},
+                    {state: "Alabama", sex: "Male", ageGroup: "40-49", covidDeaths: 1222},
+                    {state: "Alabama", sex: "Female", ageGroup: "40-49", covidDeaths: 698},
+                    {state: "Alabama", sex: "Male", ageGroup: "50-64", covidDeaths: 6111},
+                    {state: "Alabama", sex: "Female", ageGroup: "50-64", covidDeaths: 3584},
+                    {state: "Alabama", sex: "Male", ageGroup: "65-74", covidDeaths: 8157},
+                    {state: "Alabama", sex: "Female", ageGroup: "65-74", covidDeaths: 5458},
+                    {state: "Alabama", sex: "Male", ageGroup: "75-84", covidDeaths: 9211},
+                    {state: "Alabama", sex: "Female", ageGroup: "75-84", covidDeaths: 7921},
+                    {state: "Alabama", sex: "Male", ageGroup: "85+", covidDeaths: 7588},
+                    {state: "Alabama", sex: "Female", ageGroup: "85+", covidDeaths: 10203}
+                ];
+
+                function filterDeathsToList(state) {
+                    filteredList = [];
+
+                    deathsByGenderPerAgeGroupPerState.forEach((record) => {
+                        if(record.state == state) {
+                            filteredList.push({sex: record.sex, ageGroup: record.ageGroup, covidDeaths: record.covidDeaths});
+                        }
+                    });
+                    console.log(filteredList);
+
+                    d3.select("#bar-chart").remove();
+
+                    draw(filteredList);
+                }
+
+                var svg = d3.select("#covid-deaths-per-age-group-per-state"),
+                    margin = 200,
+                    width = svg.attr("width") - margin,
+                    height = svg.attr("height") - margin;
+
+                draw(filteredList);
+
+                function draw(data) {
+                    
+
+                    var chart = svg.append("g")
+                        .attr("transform", "translate(" + 100 + "," + 100 + ")")
+                        .attr("id", "bar-chart")
+
+                    var xScale = d3.scaleBand().range([0, width]).padding(0.4),
+                        yScale = d3.scaleLinear().range([height, 0]);
+
+                    xScale.domain(filteredList.map(function(d) { return d.ageGroup; }));
+                    yScale.domain([0, d3.max(filteredList, function(d) { return 110000; })]);
+
+                    chart.append("g")
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(d3.axisBottom(xScale));
+
+                        chart.append("g")
+                        .call(d3.axisLeft(yScale))
+                        .append("text")
+                        .attr("y", 6)
+                        .attr("dy", "0.71em")
+                        .attr("text-anchor", "end")
+                        .text("value");
+
+                    var subgroups = ["Male","Female"];
+
+                    var xSubgroup = d3.scaleBand()
+                        .domain(subgroups)
+                        .range([0,xScale.bandwidth()])
+                        .padding([0.05]);
+
+                    chart.selectAll(".bar")
+                        .data(filteredList)
+                        .enter()
+                        .append("g")
+                        .attr("transform", function(d) { return "translate(" + xScale(d.ageGroup) + ")"; })
+                        .selectAll("rect")
+                        .data(function(d) { return subgroups.map(function(key) { return {key: d.sex, value: d.covidDeaths}; }); })
+                        .enter().append("rect")
+                        .attr("x", function(d) { return xSubgroup(d.key); })
+                        .attr("y", function(d) { return yScale(d.value); })
+                        .attr("width", xSubgroup.bandwidth())
+                        .attr("height", function(d) { return height - yScale(d.value); })
+                        .attr("fill", function(d) { 
+                            if (d.key == "Male") {
+                                return "steelblue";
+                            } else if (d.key == "Female") {
+                                return "pink";
+                            }
+                    });
+                }
+            </script>
+            <div id="page-number">
+                Page 3
+            </div>
+            <div id="previous-and-next-page-button">
+                <button id="previous-page" onclick="changeToPageTwoFromPageThree()" type="button">Previous Page</button>
+            </div>
+        </div>
     </body>
 </html>
