@@ -1,1 +1,1 @@
-# sports-popularity-worldwide
+# covid-death-trends
