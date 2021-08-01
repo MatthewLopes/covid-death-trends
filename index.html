@@ -4,13 +4,13 @@
         <h1>COVID-19 Death Trends</h1><br>
     </head>
     <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.5.1/d3-annotation.min.js"></script>
     <body>
         <div id="overall-covid-deaths-div">
             <p>
                 COVID-19 is something we have unfortunately been dealing with since early 2020. The goal of this narrative visualization<br>
                 is to better understand what gender and age groups were most affected and break the trends down by state at the end for user<br>
                 exploration. There were a total of 601,124 COVID-19 deaths in the United States from January 1st, 2020 until July 17th, 2021.<br>
-                As you can see in the chart below, COVID-19 has affected males more than females.
             </p>
 
             <svg id="overall-covid-deaths" width=500 height=500></svg>
@@ -67,6 +67,26 @@
                     {sex: "Female", ageGroup: "All Ages", covidDeaths: 271481}
                 ]
 
+                const annotations = [
+                    {
+                    note: {
+                    label: "Males are more affected than females",
+                    wrap: 200,  // try something smaller to see text split in several lines
+                    padding: 10   // More = text lower
+                    
+                    },
+                    color: ["#cc0000"],
+                    x: 200,
+                    y: 118,
+                    dy: -50,
+                    dx: 80
+                }]
+
+                const makeAnnotations = d3.annotation()
+                    .annotations(annotations)
+                svg.append("g")
+                    .call(makeAnnotations)
+
                 xScale.domain(deathsByGenderAndAllAges.map(function(d) { return d.sex; }));
                 yScale.domain([0, d3.max(deathsByGenderAndAllAges, function(d) { return 350000; })]);
 
@@ -110,15 +130,14 @@
         <div id="covid-deaths-per-age-group-div" style="display:none;">
             <p>
                 After understanding which gender was affected the most, I wanted to break the data out into age groups.<br>
-                As you can see males are affected the most for all age groups, except the 85+ age group.<br>
-                Also, there is a huge jump in deaths in the 50-64 age group for both males and females.
             </p>
 
-            <svg id="covid-deaths-per-age-group" width=800 height=500></svg>
+            <svg id="covid-deaths-per-age-group" width=1200 height=500></svg>
             <script>
                 var svg = d3.select("#covid-deaths-per-age-group"),
+                    marginRight = 600
                     margin = 200,
-                    width = svg.attr("width") - margin,
+                    width = svg.attr("width") - marginRight,
                     height = svg.attr("height") - margin;
 
                 var g = svg.append("g")
@@ -145,6 +164,46 @@
                     {sex: "Male", ageGroup: "85+", covidDeaths: 75848},
                     {sex: "Female", ageGroup: "85+", covidDeaths: 102303}
                 ];
+
+                const annotation2 = [
+                    {
+                    note: {
+                    label: "There is a drastic increase in the # of cases in 50-64",
+                    wrap: 200,  // try something smaller to see text split in several lines
+                    padding: 20   // More = text lower
+                    
+                    },
+                    color: ["#cc0000"],
+                    x: 415,
+                    y: 235,
+                    dy: -100,
+                    dx: -200
+                }]
+
+                const makeAnnotation2 = d3.annotation()
+                    .annotations(annotation2)
+                svg.append("g")
+                    .call(makeAnnotation2)
+
+                const annotation3 = [
+                    {
+                    note: {
+                    label: "For 85+ more females are affected than males",
+                    wrap: 200,  // try something smaller to see text split in several lines
+                    padding: 20   // More = text lower
+                    
+                    },
+                    color: ["#cc0000"],
+                    x: 670,
+                    y: 155,
+                    dy: -50,
+                    dx: 50
+                }]
+
+                const makeAnnotation3 = d3.annotation()
+                    .annotations(annotation3)
+                svg.append("g")
+                    .call(makeAnnotation3)
 
                 xScale.domain(deathsByGenderPerAgeGroup.map(function(d) { return d.ageGroup; }));
                 yScale.domain([0, d3.max(deathsByGenderPerAgeGroup, function(d) { return 110000; })]);
